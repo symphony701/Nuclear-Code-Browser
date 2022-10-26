@@ -2,37 +2,61 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:codes_browser/models/doujin.dart';
 import 'package:codes_browser/models/pages.dart';
 import 'package:codes_browser/services/doujin_service.dart';
-import 'package:codes_browser/widgets/drop_select_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AddDialog extends StatefulWidget {
-  final List<PageIncludedModel> pagesIncluded;
-  String? actualCode;
-  AddDialog({Key? key, required this.pagesIncluded, this.actualCode})
+class EditDialog extends StatefulWidget {
+  final Doujin doujin;
+  final Function refresh;
+  EditDialog({Key? key, required this.doujin, required this.refresh})
       : super(key: key);
 
   @override
-  State<AddDialog> createState() => _AddDialogState();
+  State<EditDialog> createState() => _EditDialogState();
 }
 
-class _AddDialogState extends State<AddDialog> {
+class _EditDialogState extends State<EditDialog> {
   String code = '';
   String tag = '';
-  String? pageSelected;
-  final DoujinService doujinService = const DoujinService();
+  String _selectPage = '';
+  DoujinService doujinService = const DoujinService();
+  List<PageIncludedModel> pagesIncluded = [
+    PageIncludedModel(
+      name: 'NHentai',
+      url: 'https://nhentai.net/',
+      image: 'assets/nhentai.png',
+    ),
+    PageIncludedModel(
+      name: 'Hitomi',
+      url: 'https://hitomi.la/',
+      image: 'assets/hitomi.png',
+    ),
+    PageIncludedModel(
+      name: '3Hentai',
+      url: 'https://3hentai.net',
+      image: 'assets/3hentai.png',
+    ),
+  ];
 
-  void selectPage(String value) {
-    setState(() {
-      pageSelected = value;
-    });
-  }
+  List<DropdownMenuItem<String>> _dropDownMenuItems = [];
 
   @override
   void initState() {
+    code = widget.doujin.code;
+    _selectPage = widget.doujin.page;
+    tag = widget.doujin.tag;
+    _dropDownMenuItems = pagesIncluded
+        .map(
+          (e) => DropdownMenuItem(
+            value: e.name,
+            child: Text(e.name,
+                style: GoogleFonts.poppins(
+                    color: Colors.white, fontWeight: FontWeight.w400)),
+          ),
+        )
+        .toList();
     super.initState();
-    code = widget.actualCode ?? '';
   }
 
   @override
@@ -47,27 +71,17 @@ class _AddDialogState extends State<AddDialog> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               AutoSizeText(
-                'Add Dōjinshi',
+                'Edit Dōjinshi',
                 maxLines: 1,
                 minFontSize: 20,
                 style: GoogleFonts.poppins(
                     color: Colors.white, fontWeight: FontWeight.w600),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
-              ),
-              AutoSizeText(
-                'Enter the code and some tag of the Dōjinshi you want to add to your HList',
-                maxLines: 2,
-                minFontSize: 15,
-                style: GoogleFonts.poppins(
-                    color: Colors.white, fontWeight: FontWeight.w400),
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
+                height: MediaQuery.of(context).size.height * 0.03,
               ),
               TextFormField(
-                initialValue: widget.actualCode,
+                initialValue: widget.doujin.code,
                 inputFormatters: [
                   LengthLimitingTextInputFormatter(8),
                 ],
@@ -103,6 +117,7 @@ class _AddDialogState extends State<AddDialog> {
                     tag = value;
                   });
                 },
+                initialValue: widget.doujin.tag,
                 style: GoogleFonts.poppins(
                     color: Colors.white, fontWeight: FontWeight.w400),
                 decoration: InputDecoration(
@@ -124,12 +139,36 @@ class _AddDialogState extends State<AddDialog> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.03,
               ),
-              DropSelectDialog(
-                pagesIncluded: widget.pagesIncluded,
-                selectPage: selectPage,
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  color: Colors.transparent,
+                  border: Border.all(color: Colors.white, width: 1),
+                ),
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height * 0.065,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton(
+                    dropdownColor: const Color.fromARGB(255, 31, 31, 31),
+                    icon: const Icon(Icons.arrow_drop_down,
+                        color: Color.fromARGB(255, 248, 25, 73), size: 40),
+                    value: _selectPage,
+                    items: _dropDownMenuItems,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectPage = value.toString();
+                      });
+                    },
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.04,
+                height: MediaQuery.of(context).size.height * 0.03,
               ),
               Container(
                 width: MediaQuery.of(context).size.width * 0.5,
@@ -142,20 +181,21 @@ class _AddDialogState extends State<AddDialog> {
                   onPressed: () async {
                     if (code.isNotEmpty &&
                         tag.isNotEmpty &&
-                        pageSelected != null) {
-                      await doujinService.saveDoujin(
-                        Doujin(
-                          code: code,
-                          tag: tag,
-                          page: pageSelected!,
-                        ),
-                      );
+                        _selectPage.isNotEmpty) {
+                      await doujinService.updateDoujin(
+                          Doujin(
+                            code: code,
+                            tag: tag,
+                            page: _selectPage,
+                          ),
+                          widget.doujin.key);
+                      widget.refresh();
                       // ignore: use_build_context_synchronously
                       Navigator.pop(context);
                     }
                   },
                   child: AutoSizeText(
-                    'Add',
+                    'Update',
                     maxLines: 1,
                     minFontSize: 20,
                     style: GoogleFonts.poppins(

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FilterHlist extends StatefulWidget {
-  FilterHlist({Key? key}) : super(key: key);
+  final Function(String) onFilter;
+  const FilterHlist({Key? key, required this.onFilter}) : super(key: key);
 
   @override
   State<FilterHlist> createState() => _FilterHlistState();
@@ -23,6 +24,9 @@ class _FilterHlistState extends State<FilterHlist> {
         ),
       ),
       child: TextFormField(
+        onChanged: (value) {
+          widget.onFilter(value.toString());
+        },
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: 'Search',
@@ -31,7 +35,7 @@ class _FilterHlistState extends State<FilterHlist> {
             fontWeight: FontWeight.w600,
             fontSize: 16,
           ),
-          prefixIcon: Icon(
+          prefixIcon: const Icon(
             Icons.search,
             color: Colors.grey,
           ),

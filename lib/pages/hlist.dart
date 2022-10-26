@@ -1,5 +1,6 @@
 import 'package:codes_browser/models/doujin.dart';
 import 'package:codes_browser/services/doujin_service.dart';
+import 'package:codes_browser/services/filter_service.dart';
 import 'package:codes_browser/widgets/filtrer_hlist.dart';
 import 'package:codes_browser/widgets/item_list_doujin.dart';
 import 'package:flutter/material.dart';
@@ -14,15 +15,33 @@ class HlistView extends StatefulWidget {
 
 class _HlistViewState extends State<HlistView> {
   DoujinService doujinService = const DoujinService();
+  FilterService filterService = FilterService();
   List<Doujin> doujins = [];
+  List<Doujin> doujinsFiltered = [];
+  String _filterHelper = '';
 
   Future<void> getDoujins() async {
     doujins = await doujinService.getDoujins();
+    doujinsFiltered = doujins;
     setState(() {});
   }
 
-  void refresh() {
-    getDoujins();
+  void refresh() async {
+    if (_filterHelper.isEmpty) {
+      getDoujins();
+    } else if (_filterHelper.isNotEmpty) {
+      await getDoujins();
+      doujinsFiltered = filterService.filterDoujins(doujins, _filterHelper);
+      setState(() {});
+    }
+  }
+
+  void onFilter(String value) {
+    value.isEmpty
+        ? doujinsFiltered = doujins
+        : doujinsFiltered = filterService.filterDoujins(doujins, value);
+    value.isNotEmpty ? _filterHelper = value : _filterHelper = '';
+    setState(() {});
   }
 
   @override
@@ -53,7 +72,7 @@ class _HlistViewState extends State<HlistView> {
               const SizedBox(
                 height: 20,
               ),
-              FilterHlist(),
+              FilterHlist(onFilter: onFilter),
               const SizedBox(
                 height: 20,
               ),
@@ -69,17 +88,28 @@ class _HlistViewState extends State<HlistView> {
               const SizedBox(
                 height: 20,
               ),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: doujins.length,
-                itemBuilder: (context, index) {
-                  return ItemListDoujin(
-                    doujin: doujins[index],
-                    refresh: refresh,
-                  );
-                },
-              ),
+              doujins.isNotEmpty
+                  ? ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: doujinsFiltered.length,
+                      itemBuilder: (context, index) {
+                        return ItemListDoujin(
+                          doujin: doujinsFiltered[index],
+                          refresh: refresh,
+                        );
+                      },
+                    )
+                  : Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Text(
+                          'Eh, you don\'t have any doujins in your HList yet. Back to the home page and add some doujins to your HList!',
+                          style: GoogleFonts.poppins(
+                              color: Colors.white, fontSize: 16),
+                        ),
+                      ),
+                    ),
             ],
           ),
         ));

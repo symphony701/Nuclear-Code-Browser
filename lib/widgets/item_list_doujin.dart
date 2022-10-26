@@ -1,5 +1,6 @@
 import 'package:codes_browser/models/doujin.dart';
 import 'package:codes_browser/services/doujin_service.dart';
+import 'package:codes_browser/widgets/edit_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -73,7 +74,12 @@ class _ItemListDoujinState extends State<ItemListDoujin> {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              await showDialog(
+                  context: context,
+                  builder: (context) => EditDialog(
+                      doujin: widget.doujin, refresh: widget.refresh));
+            },
             icon: const Icon(
               Icons.edit,
               color: Colors.white,

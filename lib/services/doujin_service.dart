@@ -17,4 +17,9 @@ class DoujinService {
     final Box<Doujin> doujinsBox = await Hive.openBox<Doujin>('doujins');
     doujinsBox.delete(doujin.key);
   }
+
+  Future<void> updateDoujin(Doujin doujin, dynamic key) async {
+    final Box<Doujin> doujinsBox = await Hive.openBox<Doujin>('doujins');
+    doujinsBox.put(key, doujin);
+  }
 }
