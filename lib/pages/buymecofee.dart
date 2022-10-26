@@ -45,7 +45,7 @@ class _BuyMeCofeeViewState extends State<BuyMeCofeeView> {
               child: Image(image: Image.asset('assets/buymeacofee.png').image),
               onTap: () async {
                 final uri = Uri.parse('https://www.buymeacoffee.com/armonyrn');
-                if (!await launchUrl(uri, mode: LaunchMode.inAppWebView)) {
+                if (!await launchUrl(uri, mode: LaunchMode.platformDefault)) {
                   throw 'Could not launch $uri';
                 }
               },

@@ -58,8 +58,9 @@ class _AddDialogState extends State<AddDialog> {
               ),
               AutoSizeText(
                 'Enter the code and some tag of the Dōjinshi you want to add to your HList',
-                maxLines: 2,
+                maxLines: 3,
                 minFontSize: 15,
+                overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.poppins(
                     color: Colors.white, fontWeight: FontWeight.w400),
               ),
@@ -68,6 +69,7 @@ class _AddDialogState extends State<AddDialog> {
               ),
               TextFormField(
                 initialValue: widget.actualCode,
+                keyboardType: TextInputType.number,
                 inputFormatters: [
                   LengthLimitingTextInputFormatter(8),
                 ],
