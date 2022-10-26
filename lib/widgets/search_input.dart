@@ -64,13 +64,16 @@ class _SearchInputState extends State<SearchInput> {
                 ),
               ),
               GestureDetector(
-                onTap: () => showDialog(
-                  context: context,
-                  builder: (context) => AddDialog(
-                    pagesIncluded: widget.pagesIncluded,
-                    actualCode: actualCode,
-                  ),
-                ),
+                onTap: () {
+                  FocusScope.of(context).unfocus();
+                  showDialog(
+                    context: context,
+                    builder: (context) => AddDialog(
+                      pagesIncluded: widget.pagesIncluded,
+                      actualCode: actualCode,
+                    ),
+                  );
+                },
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.14,
                   height: MediaQuery.of(context).size.height * 0.065,

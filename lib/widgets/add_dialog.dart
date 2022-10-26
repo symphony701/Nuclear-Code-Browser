@@ -1,5 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:codes_browser/models/doujin.dart';
 import 'package:codes_browser/models/pages.dart';
+import 'package:codes_browser/services/doujin_service.dart';
 import 'package:codes_browser/widgets/drop_select_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +21,7 @@ class _AddDialogState extends State<AddDialog> {
   String code = '';
   String tag = '';
   String? pageSelected;
+  final DoujinService doujinService = DoujinService();
 
   void selectPage(String value) {
     setState(() {
@@ -136,8 +139,21 @@ class _AddDialogState extends State<AddDialog> {
                   color: const Color.fromARGB(255, 248, 25, 73),
                 ),
                 child: TextButton(
-                  onPressed: () {
-                    print('code: $code , tag: $tag , page: $pageSelected');
+                  onPressed: () async {
+                    if (code.isNotEmpty &&
+                        tag.isNotEmpty &&
+                        pageSelected != null) {
+                      await doujinService.saveDoujin(
+                        Doujin(
+                          code: code,
+                          tag: tag,
+                          page: pageSelected!,
+                        ),
+                      );
+                      print('code: $code , tag: $tag , page: $pageSelected');
+                      // ignore: use_build_context_synchronously
+                      Navigator.pop(context);
+                    }
                   },
                   child: AutoSizeText(
                     'Add',

@@ -1,3 +1,5 @@
+import 'package:codes_browser/models/doujin.dart';
+import 'package:codes_browser/services/doujin_service.dart';
 import 'package:codes_browser/widgets/filtrer_hlist.dart';
 import 'package:codes_browser/widgets/item_list_doujin.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,24 @@ class HlistView extends StatefulWidget {
 }
 
 class _HlistViewState extends State<HlistView> {
+  DoujinService doujinService = const DoujinService();
+  List<Doujin> doujins = [];
+
+  Future<void> getDoujins() async {
+    doujins = await doujinService.getDoujins();
+    setState(() {});
+  }
+
+  void refresh() {
+    getDoujins();
+  }
+
+  @override
+  void initState() {
+    getDoujins();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,27 +50,35 @@ class _HlistViewState extends State<HlistView> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              FilterHlist(),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
-              ListView(
+              FilterHlist(),
+              const SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Text(
+                    'Advice: You can filter your HList by tags. You can view the doujins by clicking on them.',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    )),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  ItemListDoujin(),
-                  ItemListDoujin(),
-                  ItemListDoujin(),
-                  ItemListDoujin(),
-                  ItemListDoujin(),
-                  ItemListDoujin(),
-                  ItemListDoujin(),
-                  ItemListDoujin(),
-                  ItemListDoujin(),
-                  ItemListDoujin(),
-                  ItemListDoujin(),
-                  ItemListDoujin(),
-                ],
+                itemCount: doujins.length,
+                itemBuilder: (context, index) {
+                  return ItemListDoujin(
+                    doujin: doujins[index],
+                    refresh: refresh,
+                  );
+                },
               ),
             ],
           ),
