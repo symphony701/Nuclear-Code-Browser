@@ -2,17 +2,18 @@ import 'package:codes_browser/models/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class DropSelect extends StatefulWidget {
+class DropSelectDialog extends StatefulWidget {
   final List<PageIncludedModel> pagesIncluded;
   final Function(String) selectPage;
-  DropSelect({Key? key, required this.pagesIncluded, required this.selectPage})
+  DropSelectDialog(
+      {Key? key, required this.pagesIncluded, required this.selectPage})
       : super(key: key);
 
   @override
-  State<DropSelect> createState() => _DropSelectState();
+  State<DropSelectDialog> createState() => _DropSelectDialogState();
 }
 
-class _DropSelectState extends State<DropSelect> {
+class _DropSelectDialogState extends State<DropSelectDialog> {
   List<DropdownMenuItem>? _dropDownMenuItems;
   String? _selectedValue;
 
@@ -20,10 +21,14 @@ class _DropSelectState extends State<DropSelect> {
   void initState() {
     super.initState();
     _dropDownMenuItems = widget.pagesIncluded
-        .map((e) => DropdownMenuItem(
-              value: e.name,
-              child: Text(e.name),
-            ))
+        .map(
+          (e) => DropdownMenuItem(
+            value: e.name,
+            child: Text(e.name,
+                style: GoogleFonts.poppins(
+                    color: Colors.white, fontWeight: FontWeight.w400)),
+          ),
+        )
         .toList();
     setState(() {
       _selectedValue = _dropDownMenuItems![0].value;
@@ -38,14 +43,16 @@ class _DropSelectState extends State<DropSelect> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.white,
+        borderRadius: BorderRadius.circular(5),
+        color: Colors.transparent,
+        border: Border.all(color: Colors.white, width: 1),
       ),
-      width: MediaQuery.of(context).size.width * 0.6,
+      width: double.infinity,
       height: MediaQuery.of(context).size.height * 0.065,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: DropdownButtonHideUnderline(
         child: DropdownButton(
+          dropdownColor: const Color.fromARGB(255, 31, 31, 31),
           icon: const Icon(Icons.arrow_drop_down,
               color: Color.fromARGB(255, 248, 25, 73), size: 40),
           value: _selectedValue,
@@ -53,11 +60,11 @@ class _DropSelectState extends State<DropSelect> {
           onChanged: (value) {
             setState(() {
               _selectedValue = value.toString();
+              widget.selectPage(_selectedValue!);
             });
-            widget.selectPage(_selectedValue!);
           },
           style: GoogleFonts.poppins(
-            color: Colors.black,
+            color: Colors.white,
             fontWeight: FontWeight.w500,
           ),
         ),

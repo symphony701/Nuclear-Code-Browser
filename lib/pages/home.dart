@@ -4,7 +4,6 @@ import 'package:codes_browser/widgets/page_included.dart';
 import 'package:codes_browser/widgets/search_input.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatefulWidget {
@@ -37,7 +36,6 @@ class _HomeState extends State<Home> {
   ];
 
   Future<void> openSearcher() async {
-    print(pageSelected);
     if (code.isEmpty) return;
     if (pageSelected == 'NHentai') {
       String url = 'https://nhentai.net/g/$code/';
@@ -70,15 +68,30 @@ class _HomeState extends State<Home> {
   }
 
   void selectPage(String value) {
-    setState(() {
-      pageSelected = value;
-    });
+    pageSelected = value;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(137, 31, 31, 31),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Nuclear Codes Browser',
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(onPressed: () {}, icon: const Icon(Icons.coffee)),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.library_books))
+        ],
+      ),
       body: SafeArea(
         child: Stack(
           children: [
@@ -87,6 +100,7 @@ class _HomeState extends State<Home> {
                 children: [
                   SearchInput(
                     changeCode: changeCode,
+                    pagesIncluded: pagesIncluded,
                   ),
                   DropSelect(
                     pagesIncluded: pagesIncluded,
