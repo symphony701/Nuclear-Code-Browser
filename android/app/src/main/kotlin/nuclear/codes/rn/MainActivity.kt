@@ -1,4 +1,4 @@
-package com.example.codes_browser
+package nuclear.codes.rn
 
 import io.flutter.embedding.android.FlutterActivity
 

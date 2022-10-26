@@ -1,7 +1,11 @@
+import 'package:codes_browser/models/doujin.dart';
 import 'package:codes_browser/pages/home.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+Future<void> main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter(DoujinAdapter());
   runApp(const MyApp());
 }
 
