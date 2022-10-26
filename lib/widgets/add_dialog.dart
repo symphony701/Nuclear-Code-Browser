@@ -27,6 +27,12 @@ class _AddDialogState extends State<AddDialog> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    code = widget.actualCode ?? '';
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: const Color.fromARGB(255, 31, 31, 31),

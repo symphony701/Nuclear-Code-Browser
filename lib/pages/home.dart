@@ -1,4 +1,6 @@
 import 'package:codes_browser/models/pages.dart';
+import 'package:codes_browser/pages/buymecofee.dart';
+import 'package:codes_browser/pages/hlist.dart';
 import 'package:codes_browser/widgets/drop_select.dart';
 import 'package:codes_browser/widgets/page_included.dart';
 import 'package:codes_browser/widgets/search_input.dart';
@@ -88,8 +90,18 @@ class _HomeState extends State<Home> {
         ),
         centerTitle: true,
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.coffee)),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.library_books))
+          IconButton(
+              onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => BuyMeCofeeView()),
+                  ),
+              icon: const Icon(Icons.coffee)),
+          IconButton(
+              onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HlistView()),
+                  ),
+              icon: const Icon(Icons.library_books))
         ],
       ),
       body: SafeArea(
